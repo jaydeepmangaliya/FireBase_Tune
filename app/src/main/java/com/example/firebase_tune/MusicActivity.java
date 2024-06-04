@@ -2,6 +2,7 @@ package com.example.firebase_tune;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -31,9 +32,13 @@ public class MusicActivity extends AppCompatActivity {
     ImageView musicacimg;
     int position;
     ArrayList<String> list;
-    Animation musicimganim;
+    Animation musicimganim, musicnameanim;
     // for playmusic
     MediaPlayer player;
+ Runnable runnable;
+ Handler handler;
+ int totaltime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +61,8 @@ public class MusicActivity extends AppCompatActivity {
 
         musicimganim = AnimationUtils.loadAnimation(this,R.anim.anim);
         musicacimg.setAnimation(musicimganim);
+        musicnameanim = AnimationUtils.loadAnimation(this,R.anim.muusicnametraslate);
+        adiofilename.setAnimation(musicnameanim);
 
 
 
@@ -99,6 +106,10 @@ public class MusicActivity extends AppCompatActivity {
                     player.prepare();
                     player.start();
                     adiofilename.setText(allpath.get(position));
+                    adiofilename.clearAnimation();
+                    adiofilename.startAnimation(musicnameanim);
+
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -120,6 +131,8 @@ public class MusicActivity extends AppCompatActivity {
                         player.prepare();
                         player.start();
                         adiofilename.setText(allpath.get(position));
+                        adiofilename.clearAnimation();
+                        adiofilename.startAnimation(musicnameanim);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -128,6 +141,101 @@ public class MusicActivity extends AppCompatActivity {
             }
         });
 
+        seekBarvolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+              if(b){
+                   seekBarvolume.setProgress(i);
+                   float volumelevel = i/100f;
+                   player.setVolume(volumelevel,volumelevel);
+              }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        seekbarmusicplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b){
+                    player.seekTo(i);
+                    seekbarmusicplay.setProgress(i);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+               totaltime = player.getDuration();
+               seekbarmusicplay.setMax(totaltime);
+               int currentposition = player.getCurrentPosition();
+               seekbarmusicplay.setProgress(currentposition);
+               handler.postDelayed(runnable,1000);
+               String elapsedtime = createTimeLable(currentposition);
+               String lasttime = createTimeLable(totaltime);
+               starttimetext.setText(elapsedtime);
+               endtimetext.setText(lasttime);
+               if(elapsedtime.equals(lasttime)){
+                   if(position<allpath.size()-1){
+                       position++;
+
+                       try {
+                           player.reset();
+                           player.setDataSource(allpath.get(position));
+                           player.prepare();
+                           player.start();
+                           adiofilename.setText(allpath.get(position));
+                           adiofilename.clearAnimation();
+                           adiofilename.startAnimation(musicnameanim);
+                       } catch (IOException e) {
+                           throw new RuntimeException(e);
+                       }
+
+                   }
+
+               }
+
+
+
+            }
+        };
+        handler.post(runnable);
+
+    }
+
+    public String createTimeLable(int currentposition){
+        // 1 mit == 60secod
+        //1 sc = 1000 milisecond
+        String timelable;
+        int minit,second;
+        minit = currentposition/1000/60;
+        second = currentposition/1000%60;
+        if(second <10){
+            timelable = minit +":0"+second;
+
+        }
+        else {
+            timelable = minit+":"+second;
+        }
+        return  timelable;
     }
 
 
