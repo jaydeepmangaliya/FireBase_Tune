@@ -3,7 +3,10 @@ package com.example.firebase_tune;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +28,10 @@ public class MusicActivity extends AppCompatActivity {
     TextView adiofilename,starttimetext,endtimetext;
     ArrayList<String> allpath;
     String title , filepath;
+    ImageView musicacimg;
     int position;
     ArrayList<String> list;
+    Animation musicimganim;
     // for playmusic
     MediaPlayer player;
     @Override
@@ -34,6 +39,7 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_music);
+        musicacimg = findViewById(R.id.musicACimg);
         btnnext = findViewById(R.id.nextbtn);
         btnprevies = findViewById(R.id.previosbtn);
         btnpushplay = findViewById(R.id.musicplaypushbtn);
@@ -47,6 +53,10 @@ public class MusicActivity extends AppCompatActivity {
         //musicList = (ArrayList<MusicFile>) getIntent().getSerializableExtra("music_list");
         allpath = getIntent().getStringArrayListExtra("list");
         adiofilename.setText(title);
+
+        musicimganim = AnimationUtils.loadAnimation(this,R.anim.anim);
+        musicacimg.setAnimation(musicimganim);
+
 
 
         // for play music

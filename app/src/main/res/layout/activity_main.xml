@@ -12,8 +12,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:background="@drawable/card_back"
+
         android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/recycleViewmusic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="20dp"
+
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/headphone" />
     </LinearLayout>
